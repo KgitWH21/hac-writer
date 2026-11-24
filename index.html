@@ -725,9 +725,29 @@ a:hover {
 }
 
 .ext-link-sub {
-  font-size: calc(12.5px * var(--ui-scale));
+  font-size: calc(11px * var(--ui-scale));
   color: var(--text-dim);
   display: block;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.ext-link-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.ext-link-label {
+  font-weight: 600;
+  font-size: calc(13px * var(--ui-scale));
+  color: var(--text);
+}
+
+.ext-link-intro {
+  margin: 0;
+  font-size: calc(12.5px * var(--ui-scale));
 }
 
 /* --- Pure Writing Mode --- */
@@ -3067,6 +3087,7 @@ body.insp-fullscreen .booker-dock {
     {
       id: 'text_fight',
       name: 'Text Fight',
+      label: 'Sharpen dialogue',
       desc: 'Full standalone timed-prompt writing app',
       url: 'https://kgitwh21.github.io/text-fight/',
       verified: true
@@ -3074,6 +3095,7 @@ body.insp-fullscreen .booker-dock {
     {
       id: 'sentence_trainer',
       name: 'Sentence Trainer',
+      label: 'Write anti-slop',
       desc: 'Full standalone sentence craft trainer',
       url: 'https://kgitwh21.github.io/sentence_trainer/',
       verified: true
@@ -3081,6 +3103,7 @@ body.insp-fullscreen .booker-dock {
     {
       id: 'chapter_structure_lab',
       name: 'Chapter Structure Lab',
+      label: 'Shape chapters',
       desc: 'Chapter pacing and structural beats',
       url: 'https://kgitwh21.github.io/chapter-structure-lab/',
       verified: false
@@ -3088,6 +3111,7 @@ body.insp-fullscreen .booker-dock {
     {
       id: 'character_maker',
       name: 'Character Maker',
+      label: 'Build characters',
       desc: 'Full character profile builder',
       url: 'https://kgitwh21.github.io/character-maker/',
       verified: false
@@ -3095,6 +3119,7 @@ body.insp-fullscreen .booker-dock {
     {
       id: 'character_wardrobe_picker',
       name: 'Character Wardrobe Picker',
+      label: 'Dress characters',
       desc: 'Supports ?occasion= and presentation= prefill links',
       url: 'https://kgitwh21.github.io/clothing-picker/',
       verified: false,
@@ -3103,6 +3128,7 @@ body.insp-fullscreen .booker-dock {
     {
       id: 'colorstory',
       name: 'ColorStory',
+      label: 'Splash color',
       desc: 'Color palette and mood associations',
       url: 'https://kgitwh21.github.io/colorstory/',
       verified: false
@@ -3110,6 +3136,7 @@ body.insp-fullscreen .booker-dock {
     {
       id: 'story_weather',
       name: 'Story Weather',
+      label: 'Set the mood',
       desc: 'Atmosphere and story weather generator',
       url: 'https://kgitwh21.github.io/story-weather-app/',
       verified: false
@@ -3117,6 +3144,7 @@ body.insp-fullscreen .booker-dock {
     {
       id: 'creative_container_picker',
       name: 'Creative Container Picker',
+      label: 'Pick containers',
       desc: 'Experiment with creative forms and containers',
       url: 'https://kgitwh21.github.io/creative-container-picker/',
       verified: true
@@ -3124,6 +3152,7 @@ body.insp-fullscreen .booker-dock {
     {
       id: 'storyspinner_25',
       name: 'StorySpinner 25',
+      label: 'Spin ideas',
       desc: 'Story prompts, Music Prompts, and Art Style Spinner',
       url: 'https://kgitwh21.github.io/storyspinner25/',
       verified: true
@@ -3131,6 +3160,7 @@ body.insp-fullscreen .booker-dock {
     {
       id: 'sense_weather',
       name: 'Sense Weather',
+      label: 'Freshen senses',
       desc: 'Full sensory seed picker',
       url: 'https://kgitwh21.github.io/sense-weather/',
       verified: true
@@ -3138,6 +3168,7 @@ body.insp-fullscreen .booker-dock {
     {
       id: 'keepsake',
       name: 'Keepsake',
+      label: 'Find objects',
       desc: 'Full object and keepsake picker',
       url: 'https://kgitwh21.github.io/keepsake-object-picker/',
       verified: true
@@ -4678,6 +4709,11 @@ Last saved ${saved}`;
       $('btn-roll-st').addEventListener('click', rollSentenceChallenge);
       $('btn-copy-st').addEventListener('click', () => copyText(state.toolResults.sentence));
     } else if (state.drawerTab === 'apps') {
+      const intro = document.createElement('div');
+      intro.className = 'tool-note ext-link-intro';
+      intro.textContent = 'These are the apps I actually write with.';
+      body.appendChild(intro);
+
       const card = document.createElement('div');
       card.className = 'tool-card';
       card.innerHTML = `<div class="tool-card-title"><span class="tool-title-lead">${Data.TOOL_EMBLEMS.character_wardrobe_picker}<span>Character Maker → Wardrobe Prefill</span></span></div>
@@ -4739,7 +4775,9 @@ Last saved ${saved}`;
         a.target = '_blank';
         a.rel = 'noopener noreferrer';
         const emblem = Data.TOOL_EMBLEMS[app.id] || Data.TOOL_EMBLEMS.apps;
-        a.innerHTML = `<span class="ext-link-lead"><span class="ext-link-emblem">${emblem}</span><span><strong>${app.name}</strong><span class="ext-link-sub">${app.desc}</span></span></span><span>↗</span>`;
+        const label = app.label || app.name;
+        a.title = app.name ? `${label} · ${app.name}` : label;
+        a.innerHTML = `<span class="ext-link-lead"><span class="ext-link-emblem">${emblem}</span><span class="ext-link-copy"><strong class="ext-link-label">${label}</strong><span class="ext-link-sub">${app.name}</span></span></span><span>↗</span>`;
         listWrap.appendChild(a);
       });
       body.appendChild(listWrap);
