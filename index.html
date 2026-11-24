@@ -609,7 +609,7 @@ a:hover {
   flex-wrap: wrap;
 }
 
-/* --- Tools Drawer (Right Side, Copy-Only) --- */
+/* --- Tools Drawer --- */
 .tools-drawer {
   width: 316px;
   background: var(--bg-elev);
@@ -629,7 +629,7 @@ a:hover {
   border-bottom: 1px solid var(--border-soft);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
 }
 
 .drawer-tabs {
@@ -691,6 +691,20 @@ a:hover {
 .tool-note {
   font-size: calc(12.5px * var(--ui-scale));
   color: var(--text-dim);
+}
+
+.tool-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tool-benefit {
+  margin: 0;
+  font-size: calc(12.5px * var(--ui-scale));
+  color: var(--text-muted);
+  font-weight: 400;
+  line-height: 1.4;
 }
 
 .tool-actions {
@@ -1553,16 +1567,15 @@ body.insp-fullscreen .booker-dock {
         </footer>
       </main>
 
-      <!-- Tools Drawer (Copy-Only, Never Auto-Inserted) -->
-      <aside class="tools-drawer" id="tools-drawer" aria-label="Writing Tools Drawer">
+      <!-- Tools drawer -->
+      <aside class="tools-drawer" id="tools-drawer" aria-label="Tools">
         <div class="drawer-header">
-          <span class="sidebar-section-title">Writing Tools (Copy Only)</span>
-          <button id="btn-close-tools" class="icon-btn" aria-label="Close Tools">✕</button>
+          <button id="btn-close-tools" class="icon-btn" aria-label="Close tools">✕</button>
         </div>
         <div class="drawer-tabs" role="tablist">
-          <button class="active" data-tool-tab="sense_weather"><svg class="tool-emblem" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 11.5h7.2a2.6 2.6 0 0 0 .3-5.2A3.6 3.6 0 0 0 5 5.6a2.5 2.5 0 0 0-.5 5.9Z"/><path d="M5 13.8l-.6 1M8.2 13.8l-.6 1M11.4 13.8l-.6 1"/></svg>Sense Weather</button>
-          <button data-tool-tab="keepsake"><svg class="tool-emblem" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5.5" cy="8" r="2.7"/><path d="M8.2 8h5.6M11.5 8v2.2M13.5 8v1.6"/></svg>Keepsake</button>
-          <button data-tool-tab="sentence"><svg class="tool-emblem" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.8 2.6l1.6 1.6-6.9 6.9-2.3.7.7-2.3 6.9-6.9Z"/><path d="M3 13.5h10"/></svg>Sentence</button>
+          <button class="active" data-tool-tab="sense_weather"><svg class="tool-emblem" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 11.5h7.2a2.6 2.6 0 0 0 .3-5.2A3.6 3.6 0 0 0 5 5.6a2.5 2.5 0 0 0-.5 5.9Z"/><path d="M5 13.8l-.6 1M8.2 13.8l-.6 1M11.4 13.8l-.6 1"/></svg>Freshen senses</button>
+          <button data-tool-tab="keepsake"><svg class="tool-emblem" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5.5" cy="8" r="2.7"/><path d="M8.2 8h5.6M11.5 8v2.2M13.5 8v1.6"/></svg>Find objects</button>
+          <button data-tool-tab="sentence"><svg class="tool-emblem" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.8 2.6l1.6 1.6-6.9 6.9-2.3.7.7-2.3 6.9-6.9Z"/><path d="M3 13.5h10"/></svg>Write anti-slop</button>
           <button data-tool-tab="apps"><svg class="tool-emblem" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="2.5" width="4.5" height="4.5" rx="1"/><rect x="9" y="2.5" width="4.5" height="4.5" rx="1"/><rect x="2.5" y="9" width="4.5" height="4.5" rx="1"/><rect x="9" y="9" width="4.5" height="4.5" rx="1"/></svg>Full Apps</button>
         </div>
         <div class="drawer-body" id="drawer-body"></div>
@@ -4625,7 +4638,7 @@ Last saved ${saved}`;
     }
   }
 
-  // --- Tools Drawer (Copy-Only Compact Panels + Approved External Links) ---
+  // --- Tools drawer ---
   function pick(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
   }
@@ -4664,13 +4677,15 @@ Last saved ${saved}`;
       if (!state.toolResults.sense_weather) rollSenseWeather();
       body.innerHTML = `
         <div class="tool-card">
-          <div class="tool-card-title"><span class="tool-title-lead">${Data.TOOL_EMBLEMS.sense_weather}<span>Sense Weather (Compact)</span></span><span class="tool-note">Offline</span></div>
+          <div class="tool-heading">
+            <span class="tool-title-lead">${Data.TOOL_EMBLEMS.sense_weather}<span class="ext-link-label">Freshen senses</span></span>
+            <p class="tool-benefit">Roll a smell, sound, or texture to ground your scene.</p>
+          </div>
           <div class="tool-output" id="out-sense-weather"></div>
           <div class="tool-actions">
-            <button id="btn-roll-sw" class="primary">Roll Weather</button>
+            <button id="btn-roll-sw" class="primary">Roll</button>
             <button id="btn-copy-sw">Copy</button>
           </div>
-          <div class="tool-note">Copyable only — never auto-inserted into your chapter.</div>
         </div>
       `;
       $('out-sense-weather').textContent = state.toolResults.sense_weather;
@@ -4680,13 +4695,15 @@ Last saved ${saved}`;
       if (!state.toolResults.keepsake) rollKeepsake();
       body.innerHTML = `
         <div class="tool-card">
-          <div class="tool-card-title"><span class="tool-title-lead">${Data.TOOL_EMBLEMS.keepsake}<span>Keepsake Picker (Compact)</span></span><span class="tool-note">Offline</span></div>
+          <div class="tool-heading">
+            <span class="tool-title-lead">${Data.TOOL_EMBLEMS.keepsake}<span class="ext-link-label">Find objects</span></span>
+            <p class="tool-benefit">Pick one specific object that makes the scene feel real.</p>
+          </div>
           <div class="tool-output" id="out-keepsake"></div>
           <div class="tool-actions">
-            <button id="btn-roll-ks" class="primary">Pick Keepsake</button>
+            <button id="btn-roll-ks" class="primary">Pick one</button>
             <button id="btn-copy-ks">Copy</button>
           </div>
-          <div class="tool-note">Copyable only — never auto-inserted into your chapter.</div>
         </div>
       `;
       $('out-keepsake').textContent = state.toolResults.keepsake;
@@ -4696,13 +4713,15 @@ Last saved ${saved}`;
       if (!state.toolResults.sentence) rollSentenceChallenge();
       body.innerHTML = `
         <div class="tool-card">
-          <div class="tool-card-title"><span class="tool-title-lead">${Data.TOOL_EMBLEMS.sentence}<span>Sentence Trainer Challenge</span></span><span class="tool-note">Offline</span></div>
+          <div class="tool-heading">
+            <span class="tool-title-lead">${Data.TOOL_EMBLEMS.sentence}<span class="ext-link-label">Write anti-slop</span></span>
+            <p class="tool-benefit">Vary your sentence shapes so prose sounds human.</p>
+          </div>
           <div class="tool-output" id="out-sentence"></div>
           <div class="tool-actions">
-            <button id="btn-roll-st" class="primary">New Challenge</button>
+            <button id="btn-roll-st" class="primary">New challenge</button>
             <button id="btn-copy-st">Copy</button>
           </div>
-          <div class="tool-note">Copyable only — never auto-inserted into your chapter.</div>
         </div>
       `;
       $('out-sentence').textContent = state.toolResults.sentence;
@@ -4716,8 +4735,8 @@ Last saved ${saved}`;
 
       const card = document.createElement('div');
       card.className = 'tool-card';
-      card.innerHTML = `<div class="tool-card-title"><span class="tool-title-lead">${Data.TOOL_EMBLEMS.character_wardrobe_picker}<span>Character Maker → Wardrobe Prefill</span></span></div>
-        <div class="tool-note">Preserves <code>?occasion=</code> and <code>presentation=</code> parameters only.</div>
+      card.innerHTML = `<div class="tool-heading"><span class="tool-title-lead">${Data.TOOL_EMBLEMS.character_wardrobe_picker}<span class="ext-link-label">Dress characters</span></span>
+        <p class="tool-benefit">Set occasion and presentation, then open the wardrobe picker with those already chosen.</p></div>
         <div class="field-grid">
           <div class="field-row">
             <label class="field-label" for="prefill-occasion">Occasion</label>

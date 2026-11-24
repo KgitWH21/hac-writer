@@ -1,7 +1,7 @@
 /* HAC Writer v1.2 service worker.
    Caches the app shell for offline use. Does not read or write IndexedDB,
    localStorage, or any manuscript data. */
-const CACHE = 'hac-writer-shell-v1.2.1';
+const CACHE = 'hac-writer-shell-v1.2.2';
 const SHELL = [
   './',
   './index.html',
