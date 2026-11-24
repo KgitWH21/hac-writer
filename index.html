@@ -610,6 +610,7 @@ a:hover {
 }
 
 .xp-bar-wrap {
+  --xp-bar-color: var(--accent);
   display: none;
   align-items: center;
   gap: 8px;
@@ -632,24 +633,88 @@ a:hover {
 }
 
 .xp-bar-fill {
+  position: relative;
   height: 100%;
   width: 0%;
-  background: var(--accent);
+  background: var(--xp-bar-color);
   border-radius: 99px;
-  transition: width 280ms ease;
+  transition: width 280ms ease, background-color 280ms ease;
+  overflow: hidden;
+}
+
+.xp-bar-fill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 750ms ease-in-out;
+  background-size: 200% 100%;
+}
+
+.xp-bar-wrap.prismatic .xp-bar-fill::after {
+  opacity: 1;
+  animation: xp-prism-shift 3.2s linear infinite;
+}
+
+.xp-bar-wrap[data-xp-prism="prismatic-soft"] .xp-bar-fill::after {
+  background-image: linear-gradient(90deg, #4d8eef, #7a58d4, #dfb97c, #4d8eef);
+}
+
+.xp-bar-wrap[data-xp-prism="prismatic-cool"] .xp-bar-fill::after {
+  background-image: linear-gradient(90deg, #4d8eef, #5ec8e0, #7a58d4, #4d8eef);
+}
+
+.xp-bar-wrap[data-xp-prism="prismatic"] .xp-bar-fill::after {
+  background-image: linear-gradient(90deg, #dfb97c, #c45fd4, #5ec8e0, #dfb97c);
+}
+
+.xp-bar-wrap[data-xp-prism="prismatic-hot"] .xp-bar-fill::after {
+  background-image: linear-gradient(90deg, #e08a3c, #d14a4a, #c45fd4, #e08a3c);
+}
+
+.xp-bar-wrap[data-xp-prism="prismatic-epic"] .xp-bar-fill::after {
+  background-image: linear-gradient(90deg, #9b5fbf, #dfb97c, #e8e0c8, #5b7ae8, #9b5fbf);
+}
+
+.xp-bar-wrap[data-xp-prism="prismatic-legend"] .xp-bar-fill::after {
+  background-image: linear-gradient(90deg, #dfb97c, #8bcf6e, #5ec8e0, #7a58d4, #d14a4a, #dfb97c);
+}
+
+@keyframes xp-prism-shift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+@keyframes xp-bar-pulse {
+  0%, 100% { filter: brightness(1); box-shadow: none; }
+  50% { filter: brightness(1.85); box-shadow: 0 0 12px var(--xp-bar-color, var(--warm)); }
+}
+
+.xp-bar-wrap.xp-flash .xp-bar-fill {
+  animation: xp-bar-pulse 180ms ease-in-out 3;
+}
+
+.xp-bar-wrap.xp-flash-hold .xp-bar-fill {
+  filter: brightness(1.85);
+  box-shadow: 0 0 12px var(--xp-bar-color, var(--warm));
 }
 
 .xp-bar-wrap.levelup .xp-bar-fill {
-  background: var(--warm);
-  box-shadow: 0 0 10px var(--warm);
+  box-shadow: 0 0 10px var(--xp-bar-color, var(--warm));
 }
 
 .xp-bar-label {
   font-family: var(--font-mono);
   font-size: calc(11px * var(--ui-scale));
-  color: var(--accent);
+  color: var(--xp-bar-color, var(--accent));
   white-space: nowrap;
   letter-spacing: 0.02em;
+}
+
+.xp-bar-wrap.prismatic .xp-bar-label {
+  color: var(--warm);
 }
 
 #btn-xp-recap {
@@ -690,6 +755,23 @@ a:hover {
   box-shadow: 0 0 0 1px rgba(223, 185, 124, 0.35), 0 8px 32px rgba(223, 185, 124, 0.18);
 }
 
+.xp-toast-card.rankup {
+  width: min(380px, calc(100vw - 28px));
+  padding: 18px 20px;
+}
+
+.xp-toast-card.rankup.show {
+  box-shadow: 0 0 0 1px rgba(223, 185, 124, 0.55), 0 10px 42px rgba(223, 185, 124, 0.32);
+}
+
+.xp-toast-card.rankup .xp-toast-title {
+  font-size: 20px;
+}
+
+.xp-toast-card.rankup .xp-toast-kicker {
+  letter-spacing: 0.1em;
+}
+
 .xp-toast-kicker {
   font-family: var(--font-mono);
   font-size: 11px;
@@ -728,15 +810,38 @@ a:hover {
   font-weight: 600;
 }
 
-body.reduced-motion .xp-bar-fill,
+body.reduced-motion .xp-bar-fill {
+  transition: none;
+}
+
+body.reduced-motion .xp-bar-fill::after,
+body.reduced-motion .xp-bar-wrap.prismatic .xp-bar-fill::after,
+body.reduced-motion .xp-bar-wrap.xp-flash .xp-bar-fill {
+  animation: none;
+  transition: none;
+}
+
+body.reduced-motion .xp-bar-wrap.levelup .xp-bar-fill,
+body.reduced-motion .xp-bar-wrap.xp-flash-hold .xp-bar-fill {
+  box-shadow: none;
+  filter: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .xp-bar-fill { transition: none; }
+  .xp-bar-fill::after,
+  .xp-bar-wrap.prismatic .xp-bar-fill::after,
+  .xp-bar-wrap.xp-flash .xp-bar-fill {
+    animation: none;
+    transition: none;
+  }
   .xp-toast-card,
   .xp-toast-card.show {
     transform: translate(-50%, 0);
     transition: opacity 160ms ease;
   }
-  .xp-bar-wrap.levelup .xp-bar-fill { box-shadow: none; }
+  .xp-bar-wrap.levelup .xp-bar-fill,
+  .xp-bar-wrap.xp-flash-hold .xp-bar-fill { box-shadow: none; filter: none; }
 }
 
 @media (max-width: 820px) {
@@ -1700,7 +1805,7 @@ body.insp-fullscreen .booker-dock {
           </div>
           <div class="xp-bar-wrap" id="xp-bar-wrap" hidden>
             <div class="xp-bar-track" aria-hidden="true"><div class="xp-bar-fill" id="xp-bar-fill"></div></div>
-            <span class="xp-bar-label" id="xp-bar-label">Lv 1 · Scribbler</span>
+            <span class="xp-bar-label" id="xp-bar-label">Lv 1 · Scribbler I</span>
             <button type="button" id="btn-xp-recap" title="Today's writing">Today</button>
           </div>
           <div class="status-group">
@@ -1708,7 +1813,7 @@ body.insp-fullscreen .booker-dock {
             <span id="status-save-time">Saved —</span>
           </div>
         </footer>
-        <div id="xp-levelup-card" class="xp-toast-card levelup" role="status" aria-live="polite" hidden></div>
+        <div id="xp-levelup-card" class="xp-toast-card" role="status" aria-live="polite" hidden></div>
         <div id="xp-recap-card" class="xp-toast-card" role="status" aria-live="polite" hidden></div>
 
       </main>
@@ -3031,20 +3136,136 @@ body.insp-fullscreen .booker-dock {
     hard: { id: 'hard', label: 'Hard', seconds: 90 }
   };
 
-  // Optional writer-path ranks (off by default). minXp is cumulative words written.
-  const OPTIONAL_RANKS = [
-    { minXp: 0, title: 'Scribbler', flavor: 'Every book starts with a first messy line.' },
-    { minXp: 200, title: 'Ink Apprentice', flavor: 'The page is starting to know your hand.' },
-    { minXp: 500, title: 'Drafter', flavor: 'You keep coming back. That is the work.' },
-    { minXp: 1000, title: 'Page Turner', flavor: 'Scenes are beginning to pull their own weight.' },
-    { minXp: 1800, title: 'Wordsmith', flavor: 'The sentences are starting to carry a voice.' },
-    { minXp: 3000, title: 'Plot Wrangler', flavor: 'The story has legs, and you are keeping up.' },
-    { minXp: 5000, title: 'Storyteller', flavor: 'People could get lost in this. Keep going.' },
-    { minXp: 8000, title: 'Chapter Slayer', flavor: 'Another chapter down. The book is getting heavier in the best way.' },
-    { minXp: 13000, title: 'Novelist', flavor: 'This is not a start anymore. It is a book in motion.' },
-    { minXp: 21000, title: 'Master Storyteller', flavor: 'The long work shows. Trust the pages behind you.' },
-    { minXp: 34000, title: 'Legend of the Page', flavor: 'You have written your way into rare air. The next page is still yours.' }
+  // Writer-path ranks with I-V tiers and a capstone at 1,000,000 words.
+  // OPTIONAL_RANKS is the full level ladder (raw Level ticks inside mid and late tiers).
+  const WRITER_TIERS = ['I', 'II', 'III', 'IV', 'V'];
+
+  const WRITER_RANK_DEFS = [
+    { title: 'Scribbler', color: '#8fb3a9', prismatic: false, flavor: 'Every book starts with a first messy line.' },
+    { title: 'Ink Apprentice', color: '#7eb893', prismatic: false, flavor: 'The page is starting to know your hand.' },
+    { title: 'Drafter', color: '#6bb88a', prismatic: false, flavor: 'You keep coming back. That is the work.' },
+    { title: 'Page Turner', color: '#8bcf6e', prismatic: false, flavor: 'Scenes are beginning to pull their own weight.' },
+    { title: 'Wordsmith', color: '#c5c76a', prismatic: false, flavor: 'The sentences are starting to carry a voice.' },
+    { title: 'Plot Wrangler', color: '#dfb97c', prismatic: false, flavor: 'The story has legs, and you are keeping up.' },
+    { title: 'Storyteller', color: '#e0a85c', prismatic: false, flavor: 'People could get lost in this. Keep going.' },
+    { title: 'Chapter Slayer', color: '#e08a3c', prismatic: false, flavor: 'Another chapter down. The book is getting heavier in the best way.' },
+    { title: 'Novelist', color: '#e07a3a', prismatic: false, flavor: 'This is not a start anymore. It is a book in motion.' },
+    { title: 'Series Builder', color: '#e06a40', prismatic: false, flavor: 'One book was never going to be enough.' },
+    { title: 'Bestseller Material', color: '#d95a4a', prismatic: false, flavor: 'The pile of pages could stop a door. Keep stacking.' },
+    { title: 'Shelf Stuffer', color: '#d14a4a', prismatic: false, flavor: 'Bookstores should start clearing a little extra room.' },
+    { title: 'Manuscript Machine', color: '#c73d5c', prismatic: false, flavor: 'You write like the ink has somewhere it needs to be.' },
+    { title: 'Word Titan', color: '#c43d7a', prismatic: false, flavor: 'Ordinary word counts no longer apply to you.' },
+    { title: 'Ink Demigod', color: '#b44a9a', prismatic: false, flavor: 'The page yields. You do not.' },
+    { title: 'Myth Weaver', color: '#9b5fbf', prismatic: false, flavor: 'Whole worlds are hanging off the next sentence.' },
+    { title: 'Lore Colossus', color: '#8a5fd4', prismatic: false, flavor: 'Histories form in your wake. Mind your step.' },
+    { title: 'Epic Binder', color: '#7a58d4', prismatic: false, flavor: 'Sagas are just the Tuesday habit now.' },
+    { title: 'Canon Forger', color: '#6a6ae0', prismatic: false, flavor: 'Later books will have to live up to this one.' },
+    { title: 'Legend of the Page', color: '#5b7ae8', prismatic: false, flavor: 'Your name is starting to sound like a chapter title.' },
+    { title: 'Page Deity', color: 'prismatic-soft', prismatic: true, flavor: 'Mortals count words. You count constellations.' },
+    { title: 'Story Storm', color: 'prismatic-cool', prismatic: true, flavor: 'Drafts arrive the way weather arrives: inevitable.' },
+    { title: 'Infinite Draft', color: 'prismatic', prismatic: true, flavor: 'There is always another page, and you always take it.' },
+    { title: 'Word Apocalypse', color: 'prismatic-hot', prismatic: true, flavor: 'Civilizations of sentences. You are not done.' },
+    { title: 'Myth Eternal', color: 'prismatic-epic', prismatic: true, flavor: 'The last ordinary rank. The million is in sight.' }
   ];
+
+  const WRITER_CAPSTONE = {
+    title: 'The Million-Word Writer',
+    color: 'prismatic-legend',
+    prismatic: true,
+    flavor: 'One million words. The page belongs to you.'
+  };
+
+  function splitWriterGap(g, parts) {
+    const base = Math.floor(g / parts);
+    const chunk = Array(parts).fill(base);
+    chunk[chunk.length - 1] += g - chunk.reduce((a, b) => a + b, 0);
+    return chunk.filter((c) => c > 0);
+  }
+
+  function buildWriterLadder() {
+    const earlyGaps = [120, 123, 127, 130, 134, 137, 141, 144, 147, 151, 154, 158, 161, 164, 168, 171, 175, 178, 182, 185, 188, 192, 195, 199, 202, 206, 209, 212, 216, 219, 223, 226, 229, 233, 236, 240, 243, 247, 250];
+    const midGaps = [1000, 1059, 1118, 1176, 1235, 1294, 1353, 1412, 1471, 1529, 1588, 1647, 1706, 1765, 1824, 1882, 1941, 2000, 2059, 2118, 2176, 2235, 2294, 2353, 2412, 2471, 2529, 2588, 2647, 2706, 2765, 2824, 2882, 2941, 3000];
+    const lateGaps = [11971, 12216, 12460, 12704, 12949, 13193, 13437, 13681, 13926, 14170, 14414, 14659, 14903, 15147, 15392, 15636, 15880, 16125, 16369, 16613, 16857, 17102, 17346, 17590, 17835, 18079, 18323, 18568, 18812, 19056, 19301, 19545, 19789, 20034, 20278, 20522, 20766, 21011, 21255, 21499, 21744, 21988, 22232, 22477, 22721, 22965, 23210, 23454, 23698, 23943];
+    const finalGap = 24940;
+    const steps = [];
+    earlyGaps.forEach((g) => steps.push({ size: g, flag: true }));
+    midGaps.forEach((g) => {
+      const parts = splitWriterGap(g, 2);
+      parts.forEach((p, i) => steps.push({ size: p, flag: i === parts.length - 1 }));
+    });
+    lateGaps.forEach((g) => {
+      const parts = splitWriterGap(g, 3);
+      parts.forEach((p, i) => steps.push({ size: p, flag: i === parts.length - 1 }));
+    });
+    const finalParts = splitWriterGap(finalGap, 3);
+    finalParts.forEach((p, i) => {
+      steps.push({ size: p, flag: i === finalParts.length - 1 ? 'capstone' : false });
+    });
+
+    const first = WRITER_RANK_DEFS[0];
+    const entries = [{
+      minXp: 0,
+      level: 1,
+      title: first.title,
+      tier: 'I',
+      rankKey: first.title,
+      color: first.color,
+      prismatic: !!first.prismatic,
+      flavor: first.flavor,
+      kind: 'start'
+    }];
+    let xp = 0;
+    let tierIndex = 0;
+    steps.forEach((step) => {
+      xp += step.size;
+      if (step.flag === true) {
+        tierIndex += 1;
+        const r = Math.floor(tierIndex / 5);
+        const t = tierIndex % 5;
+        const def = WRITER_RANK_DEFS[r];
+        entries.push({
+          minXp: xp,
+          level: entries.length + 1,
+          title: def.title,
+          tier: WRITER_TIERS[t],
+          rankKey: def.title,
+          color: def.color,
+          prismatic: !!def.prismatic,
+          flavor: def.flavor,
+          kind: t === 0 ? 'rank' : 'tier'
+        });
+      } else if (step.flag === 'capstone') {
+        const def = WRITER_CAPSTONE;
+        entries.push({
+          minXp: xp,
+          level: entries.length + 1,
+          title: def.title,
+          tier: '',
+          rankKey: def.title,
+          color: def.color,
+          prismatic: true,
+          flavor: def.flavor,
+          kind: 'rank'
+        });
+      } else {
+        const prev = entries[entries.length - 1];
+        entries.push({
+          minXp: xp,
+          level: entries.length + 1,
+          title: prev.title,
+          tier: prev.tier,
+          rankKey: prev.rankKey,
+          color: prev.color,
+          prismatic: prev.prismatic,
+          flavor: prev.flavor,
+          kind: 'level'
+        });
+      }
+    });
+    return entries;
+  }
+
+  const OPTIONAL_RANKS = buildWriterLadder();
 
   // Offline Text Fight Vocabulary Sparks
   const OFFLINE_VOCAB = [
@@ -3710,7 +3931,11 @@ body.insp-fullscreen .booker-dock {
     writerProgress: { totalXp: 0, todayDate: '', todayXp: 0, todayWords: 0, updatedAt: null },
     progressSaveTimer: null,
     xpLevelupTimer: null,
-    xpRecapTimer: null
+    xpRecapTimer: null,
+    xpBarAnimating: false,
+    xpBarAnimTimers: [],
+    xpBarAnimQueued: null,
+    xpBarAnimTarget: null
   };
 
   // --- DOM Helpers ---
@@ -3757,6 +3982,11 @@ body.insp-fullscreen .booker-dock {
     }
   }
 
+  function rankLabel(entry) {
+    if (!entry) return '';
+    return entry.tier ? `${entry.title} ${entry.tier}` : entry.title;
+  }
+
   function getLevelInfo(xp) {
     const ranks = Data.OPTIONAL_RANKS;
     let i = 0;
@@ -3767,16 +3997,40 @@ body.insp-fullscreen .booker-dock {
     const next = ranks[i + 1] || null;
     const span = next ? Math.max(1, next.minXp - current.minXp) : 1;
     const into = xp - current.minXp;
+    const currentLabel = rankLabel(current);
+    let nextLabel = null;
+    if (next) {
+      const nextName = rankLabel(next);
+      nextLabel = nextName === currentLabel ? `Lv ${next.level}` : nextName;
+    }
     return {
-      level: i + 1,
-      rank: current.title,
+      level: current.level || (i + 1),
+      rank: currentLabel,
+      rankKey: current.rankKey || current.title,
+      title: current.title,
+      tier: current.tier || '',
       flavor: current.flavor || '',
+      color: current.color,
+      prismatic: !!current.prismatic,
+      kind: current.kind || 'start',
       xp,
-      nextRank: next ? next.title : null,
+      nextRank: nextLabel,
       nextAt: next ? next.minXp : null,
       need: next ? Math.max(0, next.minXp - xp) : 0,
       pct: next ? Math.min(100, (into / span) * 100) : 100
     };
+  }
+
+  function highestPromotion(beforeXp, afterXp) {
+    const ranks = Data.OPTIONAL_RANKS;
+    let best = null;
+    for (let n = 0; n < ranks.length; n++) {
+      const e = ranks[n];
+      if (e.minXp <= beforeXp || e.minXp > afterXp) continue;
+      if (e.kind === 'rank') best = { type: 'rank', entry: e };
+      else if (e.kind === 'tier' && (!best || best.type !== 'rank')) best = { type: 'tier', entry: e };
+    }
+    return best;
   }
 
   function persistProgressSoon() {
@@ -3800,10 +4054,13 @@ body.insp-fullscreen .booker-dock {
 
   function awardWritingXp(prevText, nextText) {
     if (!isXpEnabled()) return;
-    const prev = countWords(prevText || '');
-    const next = countWords(nextText || '');
-    const gained = next - prev;
-    if (gained <= 0 || gained > XP_BURST_CAP) return;
+    const gained = countWords(nextText || '') - countWords(prevText || '');
+    grantWritingXp(gained);
+  }
+
+  function grantWritingXp(gained) {
+    if (!isXpEnabled()) return null;
+    if (gained <= 0 || gained > XP_BURST_CAP) return null;
     rollDailyProgress();
     const before = getLevelInfo(state.writerProgress.totalXp);
     state.writerProgress.totalXp += gained;
@@ -3811,38 +4068,190 @@ body.insp-fullscreen .booker-dock {
     state.writerProgress.todayWords += gained;
     persistProgressSoon();
     const after = getLevelInfo(state.writerProgress.totalXp);
-    renderXpBar();
-    if (after.level > before.level) showLevelUpCard(after);
+    const promo = highestPromotion(before.xp, after.xp);
+    animateXpBar(before, after, {
+      leveled: after.level > before.level,
+      rankUp: !!(promo && promo.type === 'rank')
+    });
+    if (promo) showLevelUpCard(after, { rankUp: promo.type === 'rank' });
+    return after;
   }
 
-  function renderXpBar() {
+  function applyXpBarColor(info) {
+    const wrap = $('xp-bar-wrap');
+    if (!wrap || !info) return;
+    if (info.prismatic) {
+      wrap.classList.add('prismatic');
+      wrap.dataset.xpPrism = info.color || 'prismatic';
+      wrap.style.setProperty('--xp-bar-color', 'var(--warm)');
+    } else {
+      wrap.classList.remove('prismatic');
+      delete wrap.dataset.xpPrism;
+      wrap.style.setProperty('--xp-bar-color', info.color || 'var(--accent)');
+    }
+  }
+
+  function applyXpBarLabel(info) {
+    const label = $('xp-bar-label');
+    if (!label || !info) return;
+    label.textContent = `Lv ${info.level} · ${info.rank}`;
+    label.title = info.nextRank ? `${info.need} XP to ${info.nextRank}` : info.rank;
+  }
+
+  function cancelXpBarAnim() {
+    (state.xpBarAnimTimers || []).forEach((id) => clearTimeout(id));
+    state.xpBarAnimTimers = [];
+    state.xpBarAnimating = false;
+    state.xpBarAnimQueued = null;
+    state.xpBarAnimTarget = null;
+    const wrap = $('xp-bar-wrap');
+    const fill = $('xp-bar-fill');
+    if (wrap) wrap.classList.remove('xp-flash', 'xp-flash-hold', 'xp-drain', 'xp-refill', 'levelup');
+    if (fill) fill.style.transition = '';
+  }
+
+  function laterXpBar(ms, fn) {
+    const id = setTimeout(fn, ms);
+    state.xpBarAnimTimers.push(id);
+    return id;
+  }
+
+  function finishXpBarAnim() {
+    const queued = state.xpBarAnimQueued;
+    const target = state.xpBarAnimTarget;
+    state.xpBarAnimating = false;
+    state.xpBarAnimQueued = null;
+    state.xpBarAnimTarget = null;
+    const wrap = $('xp-bar-wrap');
+    const fill = $('xp-bar-fill');
+    if (wrap) wrap.classList.remove('xp-flash', 'xp-flash-hold', 'xp-drain', 'xp-refill');
+    if (fill) fill.style.transition = '';
+    if (queued && queued.after && target && queued.after.level > target.level) {
+      animateXpBar(target, queued.after, {
+        leveled: true,
+        rankUp: !!queued.rankUp
+      });
+      return;
+    }
+    renderXpBar({ force: true });
+  }
+
+  function animateXpBar(before, after, opts) {
+    const leveled = !!(opts && opts.leveled);
+    const rankUp = !!(opts && opts.rankUp);
+    const wrap = $('xp-bar-wrap');
+    const fill = $('xp-bar-fill');
+    if (!wrap || !fill) {
+      renderXpBar({ force: true });
+      return;
+    }
+    if (state.xpBarAnimating) {
+      state.xpBarAnimQueued = { after, leveled, rankUp };
+      return;
+    }
+    if (!leveled || prefersReducedMotion()) {
+      cancelXpBarAnim();
+      renderXpBar({ force: true });
+      return;
+    }
+
+    state.xpBarAnimating = true;
+    state.xpBarAnimQueued = null;
+    state.xpBarAnimTarget = after;
+    state.xpBarAnimTimers = [];
+    wrap.classList.remove('xp-flash', 'xp-flash-hold', 'xp-drain', 'xp-refill');
+    applyXpBarColor(before);
+    applyXpBarLabel(after);
+    fill.style.transition = 'none';
+    void fill.offsetWidth;
+    fill.style.transition = 'width 200ms ease';
+    fill.style.width = '100%';
+
+    laterXpBar(220, () => {
+      wrap.classList.add('xp-flash');
+      laterXpBar(540, () => {
+        wrap.classList.remove('xp-flash');
+        wrap.classList.add('xp-drain');
+        if (rankUp || (before.rankKey !== after.rankKey)) {
+          fill.style.transition = 'width 750ms ease-in-out, background-color 750ms ease-in-out';
+          applyXpBarColor(after);
+        } else {
+          fill.style.transition = 'width 750ms ease-in-out';
+        }
+        fill.style.width = '0%';
+        laterXpBar(750, () => {
+          wrap.classList.remove('xp-drain');
+          wrap.classList.add('xp-refill');
+          applyXpBarColor(after);
+          applyXpBarLabel(after);
+          fill.style.transition = 'width 280ms ease';
+          fill.style.width = `${after.pct}%`;
+          laterXpBar(300, finishXpBarAnim);
+        });
+      });
+    });
+  }
+
+  function freezeXpBarFrame(frame, info) {
+    const wrap = $('xp-bar-wrap');
+    const fill = $('xp-bar-fill');
+    if (!wrap || !fill || !info) return;
+    cancelXpBarAnim();
+    wrap.classList.add('on');
+    wrap.hidden = false;
+    wrap.classList.remove('xp-flash', 'xp-flash-hold', 'xp-drain', 'xp-refill', 'levelup');
+    fill.style.transition = 'none';
+    if (frame === 'full') {
+      applyXpBarColor(info);
+      applyXpBarLabel(info);
+      fill.style.width = '100%';
+    } else if (frame === 'flash') {
+      applyXpBarColor(info);
+      applyXpBarLabel(info);
+      fill.style.width = '100%';
+      wrap.classList.add('xp-flash-hold');
+    } else if (frame === 'drain' || frame === 'drained') {
+      applyXpBarColor(info);
+      applyXpBarLabel(info);
+      fill.style.width = '0%';
+      wrap.classList.add('xp-drain');
+    } else {
+      renderXpBar({ force: true });
+    }
+  }
+
+  function renderXpBar(opts) {
     const wrap = $('xp-bar-wrap');
     if (!wrap) return;
+    const force = !!(opts && opts.force);
     if (!isXpEnabled()) {
+      cancelXpBarAnim();
       wrap.hidden = true;
-      wrap.classList.remove('on', 'levelup');
+      wrap.classList.remove('on', 'levelup', 'prismatic', 'xp-flash', 'xp-flash-hold', 'xp-drain', 'xp-refill');
       return;
     }
     wrap.hidden = false;
     wrap.classList.add('on');
     rollDailyProgress();
     const info = getLevelInfo(state.writerProgress.totalXp);
+    if (state.xpBarAnimating && !force) return;
     const fill = $('xp-bar-fill');
-    const label = $('xp-bar-label');
+    applyXpBarColor(info);
+    applyXpBarLabel(info);
     if (fill) fill.style.width = `${info.pct}%`;
-    if (label) {
-      label.textContent = `Lv ${info.level} · ${info.rank}`;
-      label.title = info.nextRank
-        ? `${info.need} XP to ${info.nextRank}`
-        : info.rank;
-    }
   }
 
-  function showLevelUpCard(info) {
+  function showLevelUpCard(info, opts) {
     const card = $('xp-levelup-card');
     if (!card) return;
+    const rankUp = !!(opts && opts.rankUp);
     hideXpRecapCard();
-    card.innerHTML = `<div class="xp-toast-kicker">Level ${info.level}</div><p class="xp-toast-title">${info.rank}</p><p class="xp-toast-note">${info.flavor}</p>`;
+    const kicker = rankUp
+      ? `Rank up · Level ${info.level}`
+      : `Tier up · Level ${info.level}`;
+    card.classList.toggle('rankup', rankUp);
+    card.classList.toggle('levelup', !rankUp);
+    card.innerHTML = `<div class="xp-toast-kicker">${kicker}</div><p class="xp-toast-title">${info.rank}</p><p class="xp-toast-note">${info.flavor}</p>`;
     card.hidden = false;
     const reduced = prefersReducedMotion();
     const wrap = $('xp-bar-wrap');
@@ -3850,7 +4259,7 @@ body.insp-fullscreen .booker-dock {
     requestAnimationFrame(() => card.classList.add('show'));
     clearTimeout(state.xpLevelupTimer);
     state.xpLevelupTimer = setTimeout(() => {
-      card.classList.remove('show');
+      card.classList.remove('show', 'rankup', 'levelup');
       if (wrap) wrap.classList.remove('levelup');
       setTimeout(() => { card.hidden = true; card.innerHTML = ''; }, reduced ? 160 : 280);
     }, 3000);
@@ -3876,7 +4285,7 @@ body.insp-fullscreen .booker-dock {
     card.innerHTML = `<div class="xp-toast-kicker">Today</div><p class="xp-toast-title">${info.rank}</p>
       <div class="xp-recap-row"><span>Words today</span><strong>${state.writerProgress.todayWords}</strong></div>
       <div class="xp-recap-row"><span>XP gained today</span><strong>${state.writerProgress.todayXp}</strong></div>
-      <div class="xp-recap-row"><span>Next rank</span><strong>${nextLine}</strong></div>`;
+      <div class="xp-recap-row"><span>Next</span><strong>${nextLine}</strong></div>`;
     card.hidden = false;
     requestAnimationFrame(() => card.classList.add('show'));
     clearTimeout(state.xpRecapTimer);
@@ -5772,12 +6181,35 @@ Last saved ${saved}`;
       },
       setXpEnabledForTest: (on) => {
         if (state.index) state.index.settings.xpEnabled = !!on;
-        renderXpBar();
+        renderXpBar({ force: true });
+      },
+      setWriterXpForTest: (xp) => {
+        rollDailyProgress();
+        if (!state.writerProgress) state.writerProgress = emptyProgress();
+        state.writerProgress.totalXp = Math.max(0, Math.floor(Number(xp) || 0));
+        cancelXpBarAnim();
+        renderXpBar({ force: true });
+        return getLevelInfo(state.writerProgress.totalXp);
+      },
+      grantWritingXpForTest: (gained) => grantWritingXp(Number(gained) || 0),
+      setXpBarAnimFrameForTest: (frame, xp) => {
+        if (!isXpEnabled() && state.index) state.index.settings.xpEnabled = true;
+        if (typeof xp === 'number') {
+          rollDailyProgress();
+          if (!state.writerProgress) state.writerProgress = emptyProgress();
+          state.writerProgress.totalXp = Math.max(0, Math.floor(xp));
+        }
+        const info = getLevelInfo((state.writerProgress && state.writerProgress.totalXp) || 0);
+        freezeXpBarFrame(String(frame || 'full'), info);
+        return info;
       },
       getWriterProgress: () => {
         rollDailyProgress();
         return Object.assign({}, state.writerProgress, getLevelInfo(state.writerProgress.totalXp || 0));
       },
+      getWriterLadderForTest: () => Data.OPTIONAL_RANKS.map((e) => ({
+        minXp: e.minXp, level: e.level, title: e.title, tier: e.tier, kind: e.kind, color: e.color
+      })),
       showXpRecapForTest: () => showXpRecapCard(),
       simulateExternalDiskEdit: async (newDiskContent) => {
         const ch = getActiveChapterMeta();
