@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#111317">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="description" content="HAC Writer — A quiet, offline, zero-AI novel writing editor for mobile and desktop.">
-  <title>HAC Writer — Zero-AI Novel Editor</title>
+  <meta name="description" content="HAC Writer — A quiet, offline novel writing editor for mobile and desktop.">
+  <title>HAC Writer</title>
   <!-- HAC Writer v1.2: real PWA (manifest, icons, service worker). Save/backup behavior unchanged. -->
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
@@ -608,6 +608,144 @@ a:hover {
   gap: 12px;
   flex-wrap: wrap;
 }
+
+.xp-bar-wrap {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 160px;
+  min-width: 140px;
+}
+
+.xp-bar-wrap.on {
+  display: flex;
+}
+
+.xp-bar-track {
+  flex: 1;
+  height: 4px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-soft);
+  border-radius: 99px;
+  overflow: hidden;
+  min-width: 64px;
+}
+
+.xp-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--accent);
+  border-radius: 99px;
+  transition: width 280ms ease;
+}
+
+.xp-bar-wrap.levelup .xp-bar-fill {
+  background: var(--warm);
+  box-shadow: 0 0 10px var(--warm);
+}
+
+.xp-bar-label {
+  font-family: var(--font-mono);
+  font-size: calc(11px * var(--ui-scale));
+  color: var(--accent);
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
+#btn-xp-recap {
+  padding: 2px 7px;
+  min-height: 22px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--warm);
+  border-color: var(--border-soft);
+  background: var(--bg-panel);
+}
+
+.xp-toast-card {
+  position: fixed;
+  left: 50%;
+  bottom: 56px;
+  transform: translate(-50%, 16px);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 240;
+  width: min(320px, calc(100vw - 28px));
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+  color: var(--text);
+}
+
+.xp-toast-card.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
+  transition: opacity 220ms ease, transform 280ms ease;
+}
+
+.xp-toast-card.levelup.show {
+  box-shadow: 0 0 0 1px rgba(223, 185, 124, 0.35), 0 8px 32px rgba(223, 185, 124, 0.18);
+}
+
+.xp-toast-kicker {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--warm);
+  margin: 0 0 4px;
+}
+
+.xp-toast-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text);
+}
+
+.xp-toast-note {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.xp-recap-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+.xp-recap-row strong {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+body.reduced-motion .xp-bar-fill,
+@media (prefers-reduced-motion: reduce) {
+  .xp-bar-fill { transition: none; }
+  .xp-toast-card,
+  .xp-toast-card.show {
+    transform: translate(-50%, 0);
+    transition: opacity 160ms ease;
+  }
+  .xp-bar-wrap.levelup .xp-bar-fill { box-shadow: none; }
+}
+
+@media (max-width: 820px) {
+  .xp-bar-wrap {
+    flex: 1 1 100%;
+    order: 3;
+  }
+}
+
 
 /* --- Tools Drawer --- */
 .tools-drawer {
@@ -1410,7 +1548,7 @@ body.insp-fullscreen .booker-dock {
     <header class="topbar" role="banner">
       <div class="topbar-left">
         <button id="btn-toggle-sidebar" title="Toggle Chapters" aria-label="Toggle Chapters"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.2" y="2.5" width="11.6" height="11" rx="1.6"/><path d="M6.2 2.5v11"/></svg><span>Chapters</span></button>
-        <span class="brand-mark" title="Zero AI · Zero Tracking · Local Only">HAC Writer</span>
+        <span class="brand-mark" title="Your words stay on your device">HAC Writer</span>
         <input id="book-title-input" class="book-title-input" type="text" aria-label="Book Title" placeholder="Untitled Novel">
       </div>
       <div class="topbar-center">
@@ -1546,7 +1684,7 @@ body.insp-fullscreen .booker-dock {
             spellcheck="true"
             autocomplete="off"
             aria-label="Chapter Manuscript"
-            placeholder="Begin writing. Everything stays on your device — zero AI, zero cloud, autosaved on every edit."
+            placeholder="Begin writing. Everything stays on your device, autosaved on every edit."
           ></textarea>
         </div>
 
@@ -1560,11 +1698,19 @@ body.insp-fullscreen .booker-dock {
             <span id="status-book-words">Book: 0 words</span>
             <span id="status-session-live" style="display:none;color:var(--warm);">Session: +0 / 500</span>
           </div>
+          <div class="xp-bar-wrap" id="xp-bar-wrap" hidden>
+            <div class="xp-bar-track" aria-hidden="true"><div class="xp-bar-fill" id="xp-bar-fill"></div></div>
+            <span class="xp-bar-label" id="xp-bar-label">Lv 1 · Scribbler</span>
+            <button type="button" id="btn-xp-recap" title="Today's writing">Today</button>
+          </div>
           <div class="status-group">
             <span id="status-offline-indicator" style="display:none;color:var(--warm);">Offline (Local Safe)</span>
             <span id="status-save-time">Saved —</span>
           </div>
         </footer>
+        <div id="xp-levelup-card" class="xp-toast-card levelup" role="status" aria-live="polite" hidden></div>
+        <div id="xp-recap-card" class="xp-toast-card" role="status" aria-live="polite" hidden></div>
+
       </main>
 
       <!-- Tools drawer -->
@@ -1774,11 +1920,11 @@ body.insp-fullscreen .booker-dock {
 
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
           <input id="setting-xp-enabled" type="checkbox">
-          <span>Enable optional Inspiration Mode XP &amp; Ranks (off by default)</span>
+          <span>Level up as you write</span>
         </label>
 
         <div class="tool-card">
-          <div class="tool-card-title"><span>Desktop Companion: Booker (Capybara)</span><span class="tool-note">Desktop Only · Zero AI</span></div>
+          <div class="tool-card-title"><span>Desktop Companion: Booker (Capybara)</span><span class="tool-note">Desktop only</span></div>
           <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
             <input id="setting-booker-enabled" type="checkbox">
             <span>Show Booker in the bottom-right corner (off by default; hidden in Pure Mode)</span>
@@ -1793,9 +1939,9 @@ body.insp-fullscreen .booker-dock {
         </div>
 
         <div class="tool-card">
-          <div class="tool-card-title"><span>Zero-AI &amp; Privacy Guarantee</span></div>
+          <div class="tool-card-title"><span>Your words stay on your device.</span></div>
           <div class="tool-note" style="color:var(--text-muted);font-size:12px;">
-            HAC Writer contains zero AI features, zero analytics, zero tracking, and zero cloud sync. All manuscripts remain strictly on your device.
+            Manuscripts, backups, and settings remain on this device. Nothing is sent to a cloud unless you export a file yourself.
           </div>
           <div class="tool-actions">
             <button id="btn-settings-export">Export / Import Book</button>
@@ -1875,10 +2021,10 @@ body.insp-fullscreen .booker-dock {
       </div>
       <div class="modal-body">
         <p style="margin:0;font-size:13px;color:var(--text-muted);">
-          HAC Writer is a one-time $25 purchase via Gumroad, free for Zero-AI Novel Challenge members, and included with HAC Fiction Insider. No account is ever required.
+          HAC Writer is a one-time $25 purchase via Gumroad, and is included with HAC Fiction Insider. No account is required.
         </p>
         <div class="tool-note" style="padding:8px;background:var(--bg);border:1px solid var(--border-soft);border-radius:6px;">
-          <strong>Privacy contract:</strong> When live Gumroad license verification is wired up after v1, only the license key will be checked—manuscript text is never transmitted anywhere.
+          Your words stay on your device. When license verification is wired up, only the license key is checked. Manuscript text is never sent anywhere.
         </div>
         <div id="license-status-box" class="storage-badge"></div>
         <div class="field-row">
@@ -1886,7 +2032,7 @@ body.insp-fullscreen .booker-dock {
           <input id="license-key-input" type="text" placeholder="e.g., HAC-ZEROAI-2026 or Gumroad key">
         </div>
         <div class="tool-note">
-          v1 local test codes: <code>HAC-ZEROAI-2026</code> (Zero-AI Challenge), <code>HAC-INSIDER-2026</code> (HAC Fiction Insider), or any <code>HAC-GUMROAD-XXXX</code> / <code>XXXX-XXXX-XXXX-XXXX</code> format key.
+          v1 local test codes: <code>HAC-ZEROAI-2026</code>, <code>HAC-INSIDER-2026</code> (HAC Fiction Insider), or any <code>HAC-GUMROAD-XXXX</code> / <code>XXXX-XXXX-XXXX-XXXX</code> format key.
         </div>
       </div>
       <div class="modal-footer">
@@ -2779,8 +2925,35 @@ body.insp-fullscreen .booker-dock {
       return parts.join('\n').trim() + '\n';
     }
 
+    async getWriterProgress() {
+      const rec = await this._idbGet('meta', 'writer_progress');
+      if (rec && typeof rec.totalXp === 'number') {
+        return {
+          totalXp: rec.totalXp,
+          todayDate: rec.todayDate || '',
+          todayXp: rec.todayXp || 0,
+          todayWords: rec.todayWords || 0,
+          updatedAt: rec.updatedAt || null
+        };
+      }
+      return { totalXp: 0, todayDate: '', todayXp: 0, todayWords: 0, updatedAt: null };
+    }
+
+    async saveWriterProgress(progress) {
+      if (!progress) return;
+      await this._idbPut('meta', {
+        key: 'writer_progress',
+        totalXp: progress.totalXp || 0,
+        todayDate: progress.todayDate || '',
+        todayXp: progress.todayXp || 0,
+        todayWords: progress.todayWords || 0,
+        updatedAt: progress.updatedAt || new Date().toISOString()
+      });
+    }
+
     async buildPortableBundle(index, chapterContents, bibleContents = {}) {
       const versions = await this.getAllVersions();
+      const writerProgress = await this.getWriterProgress();
       return JSON.stringify(
         {
           format: 'hac-writer-bundle-v1',
@@ -2788,7 +2961,8 @@ body.insp-fullscreen .booker-dock {
           index,
           chapterContents,
           bibleContents,
-          versions
+          versions,
+          writerProgress
         },
         null,
         2
@@ -2818,6 +2992,9 @@ body.insp-fullscreen .booker-dock {
           await this._idbPut('versions', v);
         }
       }
+      if (bundle.writerProgress && typeof bundle.writerProgress.totalXp === 'number') {
+        await this.saveWriterProgress(bundle.writerProgress);
+      }
       if (this.dirHandle) {
         await this.writeWholeBookToFolder(bundle.index, bundle.chapterContents, bibleContents);
       }
@@ -2832,7 +3009,7 @@ body.insp-fullscreen .booker-dock {
   </script>
   <script>
 /* HAC Writer — Offline Craft Decks, Vocab, Tools Data & External App Links (v1)
- * 100% offline, deterministic/randomized client-side tables, zero AI, zero network calls.
+ * 100% offline, deterministic/randomized client-side tables, no network calls.
  */
 (function (global) {
   'use strict';
@@ -2854,13 +3031,19 @@ body.insp-fullscreen .booker-dock {
     hard: { id: 'hard', label: 'Hard', seconds: 90 }
   };
 
-  // Optional XP ranks (strictly OFF by default)
+  // Optional writer-path ranks (off by default). minXp is cumulative words written.
   const OPTIONAL_RANKS = [
-    { minXp: 0, title: 'Warmup Scribe' },
-    { minXp: 50, title: 'Draft Brawler' },
-    { minXp: 150, title: 'Chapter Striker' },
-    { minXp: 320, title: 'Manuscript Veteran' },
-    { minXp: 600, title: 'Zero-AI Iron Pen' }
+    { minXp: 0, title: 'Scribbler', flavor: 'Every book starts with a first messy line.' },
+    { minXp: 200, title: 'Ink Apprentice', flavor: 'The page is starting to know your hand.' },
+    { minXp: 500, title: 'Drafter', flavor: 'You keep coming back. That is the work.' },
+    { minXp: 1000, title: 'Page Turner', flavor: 'Scenes are beginning to pull their own weight.' },
+    { minXp: 1800, title: 'Wordsmith', flavor: 'The sentences are starting to carry a voice.' },
+    { minXp: 3000, title: 'Plot Wrangler', flavor: 'The story has legs, and you are keeping up.' },
+    { minXp: 5000, title: 'Storyteller', flavor: 'People could get lost in this. Keep going.' },
+    { minXp: 8000, title: 'Chapter Slayer', flavor: 'Another chapter down. The book is getting heavier in the best way.' },
+    { minXp: 13000, title: 'Novelist', flavor: 'This is not a start anymore. It is a book in motion.' },
+    { minXp: 21000, title: 'Master Storyteller', flavor: 'The long work shows. Trust the pages behind you.' },
+    { minXp: 34000, title: 'Legend of the Page', flavor: 'You have written your way into rare air. The next page is still yours.' }
   ];
 
   // Offline Text Fight Vocabulary Sparks
@@ -3237,7 +3420,7 @@ body.insp-fullscreen .booker-dock {
 
   </script>
   <script>
-/* HAC Writer — Booker Desktop Writer Companion (Zero AI, Offline Inline SVG)
+/* HAC Writer — Booker Desktop Writer Companion (Offline Inline SVG)
  * Original sleeping capybara mascot inspired in spirit by calm desktop companions.
  * Strictly off by default, desktop-only (>=1024px), hidden in Pure Writing Mode.
  * Never reads manuscript text — reacts only to numeric/boolean editor signals.
@@ -3465,7 +3648,7 @@ body.insp-fullscreen .booker-dock {
   </script>
   <script>
 /* HAC Writer — Main Application Controller (v1)
- * Zero AI · Zero Analytics · Zero Tracking · 100% Local & Offline
+ * Local only. No analytics, no tracking. 100% on this device.
  */
 (function (global) {
   'use strict';
@@ -3523,7 +3706,11 @@ body.insp-fullscreen .booker-dock {
     wardrobeOccasion: 'everyday',
     wardrobePresentation: 'neutral',
     lastTypedAt: Date.now(),
-    booker: null
+    booker: null,
+    writerProgress: { totalXp: 0, todayDate: '', todayXp: 0, todayWords: 0, updatedAt: null },
+    progressSaveTimer: null,
+    xpLevelupTimer: null,
+    xpRecapTimer: null
   };
 
   // --- DOM Helpers ---
@@ -3536,6 +3723,164 @@ body.insp-fullscreen .booker-dock {
     t.classList.add('show');
     clearTimeout(showToast._tid);
     showToast._tid = setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  const XP_BURST_CAP = 300;
+
+  function localDateStr(d = new Date()) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
+  function prefersReducedMotion() {
+    if (state.index && state.index.settings.reducedMotion) return true;
+    return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }
+
+  function isXpEnabled() {
+    return !!(state.index && state.index.settings.xpEnabled);
+  }
+
+  function emptyProgress() {
+    return { totalXp: 0, todayDate: localDateStr(), todayXp: 0, todayWords: 0, updatedAt: null };
+  }
+
+  function rollDailyProgress() {
+    const today = localDateStr();
+    if (!state.writerProgress) state.writerProgress = emptyProgress();
+    if (state.writerProgress.todayDate !== today) {
+      state.writerProgress.todayDate = today;
+      state.writerProgress.todayXp = 0;
+      state.writerProgress.todayWords = 0;
+    }
+  }
+
+  function getLevelInfo(xp) {
+    const ranks = Data.OPTIONAL_RANKS;
+    let i = 0;
+    for (let n = 0; n < ranks.length; n++) {
+      if (xp >= ranks[n].minXp) i = n;
+    }
+    const current = ranks[i];
+    const next = ranks[i + 1] || null;
+    const span = next ? Math.max(1, next.minXp - current.minXp) : 1;
+    const into = xp - current.minXp;
+    return {
+      level: i + 1,
+      rank: current.title,
+      flavor: current.flavor || '',
+      xp,
+      nextRank: next ? next.title : null,
+      nextAt: next ? next.minXp : null,
+      need: next ? Math.max(0, next.minXp - xp) : 0,
+      pct: next ? Math.min(100, (into / span) * 100) : 100
+    };
+  }
+
+  function persistProgressSoon() {
+    clearTimeout(state.progressSaveTimer);
+    state.progressSaveTimer = setTimeout(() => {
+      if (storage && state.writerProgress) {
+        state.writerProgress.updatedAt = new Date().toISOString();
+        storage.saveWriterProgress(state.writerProgress);
+      }
+    }, 400);
+  }
+
+  async function loadWriterProgress() {
+    try {
+      state.writerProgress = await storage.getWriterProgress();
+    } catch (_err) {
+      state.writerProgress = emptyProgress();
+    }
+    rollDailyProgress();
+  }
+
+  function awardWritingXp(prevText, nextText) {
+    if (!isXpEnabled()) return;
+    const prev = countWords(prevText || '');
+    const next = countWords(nextText || '');
+    const gained = next - prev;
+    if (gained <= 0 || gained > XP_BURST_CAP) return;
+    rollDailyProgress();
+    const before = getLevelInfo(state.writerProgress.totalXp);
+    state.writerProgress.totalXp += gained;
+    state.writerProgress.todayXp += gained;
+    state.writerProgress.todayWords += gained;
+    persistProgressSoon();
+    const after = getLevelInfo(state.writerProgress.totalXp);
+    renderXpBar();
+    if (after.level > before.level) showLevelUpCard(after);
+  }
+
+  function renderXpBar() {
+    const wrap = $('xp-bar-wrap');
+    if (!wrap) return;
+    if (!isXpEnabled()) {
+      wrap.hidden = true;
+      wrap.classList.remove('on', 'levelup');
+      return;
+    }
+    wrap.hidden = false;
+    wrap.classList.add('on');
+    rollDailyProgress();
+    const info = getLevelInfo(state.writerProgress.totalXp);
+    const fill = $('xp-bar-fill');
+    const label = $('xp-bar-label');
+    if (fill) fill.style.width = `${info.pct}%`;
+    if (label) {
+      label.textContent = `Lv ${info.level} · ${info.rank}`;
+      label.title = info.nextRank
+        ? `${info.need} XP to ${info.nextRank}`
+        : info.rank;
+    }
+  }
+
+  function showLevelUpCard(info) {
+    const card = $('xp-levelup-card');
+    if (!card) return;
+    hideXpRecapCard();
+    card.innerHTML = `<div class="xp-toast-kicker">Level ${info.level}</div><p class="xp-toast-title">${info.rank}</p><p class="xp-toast-note">${info.flavor}</p>`;
+    card.hidden = false;
+    const reduced = prefersReducedMotion();
+    const wrap = $('xp-bar-wrap');
+    if (wrap && !reduced) wrap.classList.add('levelup');
+    requestAnimationFrame(() => card.classList.add('show'));
+    clearTimeout(state.xpLevelupTimer);
+    state.xpLevelupTimer = setTimeout(() => {
+      card.classList.remove('show');
+      if (wrap) wrap.classList.remove('levelup');
+      setTimeout(() => { card.hidden = true; card.innerHTML = ''; }, reduced ? 160 : 280);
+    }, 3000);
+  }
+
+  function hideXpRecapCard() {
+    const card = $('xp-recap-card');
+    if (!card) return;
+    card.classList.remove('show');
+    clearTimeout(state.xpRecapTimer);
+    setTimeout(() => { card.hidden = true; }, prefersReducedMotion() ? 160 : 280);
+  }
+
+  function showXpRecapCard() {
+    if (!isXpEnabled()) return;
+    const card = $('xp-recap-card');
+    if (!card) return;
+    rollDailyProgress();
+    const info = getLevelInfo(state.writerProgress.totalXp);
+    const nextLine = info.nextRank
+      ? `${info.need} XP to ${info.nextRank}`
+      : 'Top rank reached';
+    card.innerHTML = `<div class="xp-toast-kicker">Today</div><p class="xp-toast-title">${info.rank}</p>
+      <div class="xp-recap-row"><span>Words today</span><strong>${state.writerProgress.todayWords}</strong></div>
+      <div class="xp-recap-row"><span>XP gained today</span><strong>${state.writerProgress.todayXp}</strong></div>
+      <div class="xp-recap-row"><span>Next rank</span><strong>${nextLine}</strong></div>`;
+    card.hidden = false;
+    requestAnimationFrame(() => card.classList.add('show'));
+    clearTimeout(state.xpRecapTimer);
+    state.xpRecapTimer = setTimeout(() => hideXpRecapCard(), 5000);
   }
 
   function openModal(id) {
@@ -4207,10 +4552,12 @@ Last saved ${saved}`;
     const ed = $('manuscript-editor');
     const text = ed.value;
     const chId = state.activeChapterId;
+    const prevText = state.chapterContents[chId] ?? '';
     state.chapterContents[chId] = text;
 
     if (recordUndo) {
       pushUndoState(chId, text, ed.selectionStart, ed.selectionEnd);
+      awardWritingXp(prevText, text);
     }
 
     if (state.activeSession) {
@@ -4419,6 +4766,7 @@ Last saved ${saved}`;
       renderWordCountsAndGoals();
       renderCalendar();
       showToast(`Session logged: ${netWords >= 0 ? '+' : ''}${netWords} net words.`);
+      if (isXpEnabled()) showXpRecapCard();
     }
   }
 
@@ -4539,17 +4887,7 @@ Last saved ${saved}`;
 
   function updateInspirationXPBadge() {
     const badge = $('insp-xp-badge');
-    if (!badge || !state.index) return;
-    if (!state.index.settings.xpEnabled) {
-      badge.style.display = 'none';
-      return;
-    }
-    badge.style.display = 'inline-block';
-    let rank = Data.OPTIONAL_RANKS[0].title;
-    for (const r of Data.OPTIONAL_RANKS) {
-      if (state.insp.xp >= r.minXp) rank = r.title;
-    }
-    badge.textContent = `${state.insp.xp} XP · ${rank}`;
+    if (badge) badge.style.display = 'none';
   }
 
   function startInspirationTimer() {
@@ -4822,7 +5160,7 @@ Last saved ${saved}`;
     }
     let tier = null;
     if (raw === 'HAC-ZEROAI-2026' || raw.startsWith('HAC-ZEROAI-')) {
-      tier = 'Zero-AI Novel Challenge';
+      tier = 'Challenge license';
     } else if (raw === 'HAC-INSIDER-2026' || raw.startsWith('HAC-INSIDER-')) {
       tier = 'HAC Fiction Insider';
     } else if (raw.startsWith('HAC-GUMROAD-') || /^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(raw)) {
@@ -4913,6 +5251,7 @@ Last saved ${saved}`;
       state.index.settings.xpEnabled = $('setting-xp-enabled').checked;
       state.index.settings.bookerEnabled = $('setting-booker-enabled').checked;
       applyVisualSettings();
+      renderXpBar();
       renderWordCountsAndGoals();
       await storage.saveIndexOnly(state.index);
       closeModal('modal-settings');
@@ -5045,7 +5384,11 @@ Last saved ${saved}`;
     $('btn-snapshot').addEventListener('click', async () => {
       await flushSaveNow({ snapshotReason: 'manual' });
       showToast('Manual snapshot saved.');
+      if (isXpEnabled()) showXpRecapCard();
     });
+    if ($('btn-xp-recap')) {
+      $('btn-xp-recap').addEventListener('click', () => showXpRecapCard());
+    }
     $('btn-history-save-now').addEventListener('click', async () => {
       await flushSaveNow({ snapshotReason: 'manual' });
       openHistoryModal();
@@ -5099,9 +5442,6 @@ Last saved ${saved}`;
     }));
     $('btn-insp-used').addEventListener('mousedown', keepEditorFocus(() => {
       state.insp.usedCount += 1;
-      if (state.index.settings.xpEnabled) {
-        state.insp.xp += 15;
-      }
       state.insp.pinned = false;
       drawInspirationPrompt();
       showToast('Marked prompt used.');
@@ -5220,6 +5560,8 @@ Last saved ${saved}`;
             state.bibleContents = restored.bibleContents || {};
             $('book-title-input').value = state.index.title;
             applyVisualSettings();
+            await loadWriterProgress();
+            renderXpBar();
             await selectChapter(state.index.activeChapterId || state.index.chapters[0].id);
             showToast('Book backup restored. Your previous book was snapshotted first.');
           };
@@ -5316,7 +5658,9 @@ Last saved ${saved}`;
     applyVisualSettings();
     renderStorageBadge();
     updateOfflineIndicator();
+    await loadWriterProgress();
     bindEvents();
+    renderXpBar();
 
     const startCh = state.index.activeChapterId || (state.index.chapters[0] && state.index.chapters[0].id);
     if (startCh) {
@@ -5340,7 +5684,7 @@ Last saved ${saved}`;
       navigator.serviceWorker.register('./sw.js').catch(() => {});
     }
 
-    // Local-only automated test hooks (zero network, zero AI)
+    // Local-only automated test hooks (no network)
     global.__HAC_TEST_HOOKS__ = {
       flushSaveNow,
       getState: () => ({
@@ -5426,6 +5770,15 @@ Last saved ${saved}`;
         showAppAlert('This browser could not save to IndexedDB. What you write is only in memory and will be lost if you close or refresh this page. Use Export now to save a backup file.');
         renderStorageBadge();
       },
+      setXpEnabledForTest: (on) => {
+        if (state.index) state.index.settings.xpEnabled = !!on;
+        renderXpBar();
+      },
+      getWriterProgress: () => {
+        rollDailyProgress();
+        return Object.assign({}, state.writerProgress, getLevelInfo(state.writerProgress.totalXp || 0));
+      },
+      showXpRecapForTest: () => showXpRecapCard(),
       simulateExternalDiskEdit: async (newDiskContent) => {
         const ch = getActiveChapterMeta();
         if (!storage.dirHandle || !storage.dirHandle._files) {
